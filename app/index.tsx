@@ -1,32 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
-import {Platform, StyleSheet, View,Text} from 'react-native';
-
-
+import {Text, ImageBackground, SafeAreaView, View,StyleSheet} from 'react-native';
+import {witherImagesBg} from '@constants/index'
+const typeWither='light snow'
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator}  />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-    </View>
+      <SafeAreaView className="flex-1">
+          <StatusBar style="light" />
+      <ImageBackground
+          source={witherImagesBg[typeWither]}
+          resizeMode="cover"
+          className="flex-1 items-center justify-center bg-blue-500"
+      >
+        {/*  overlay    */}
+          <View style={{...StyleSheet.absoluteFillObject, backgroundColor:'rgba(0,0,0,0.5)'}}></View>
+        {/*  body */}
+        <Text className="text-red-600 text-xl">Hello, NativeWind!</Text>
+        <Text className=""></Text>
+      </ImageBackground>
+      </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
