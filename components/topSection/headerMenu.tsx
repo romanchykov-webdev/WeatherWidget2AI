@@ -7,16 +7,14 @@ import Animated, {FadeInLeft, FadeInRight} from 'react-native-reanimated'
 
 interface HeaderMenuComponentProps {
     isRefreshingDone: boolean;
+    handlePresentModalPress: () => void;
 }
 
-const HeaderMenu = ({isRefreshingDone}: HeaderMenuComponentProps) => {
+const HeaderMenu = ({isRefreshingDone,handlePresentModalPress}: HeaderMenuComponentProps) => {
     // setIsImageLoaded
     // console.log('isImageLoaded',isImageLoaded)
 
 
-    const handleSetting=()=>{
-
-    }
 
 
     return (
@@ -38,7 +36,7 @@ const HeaderMenu = ({isRefreshingDone}: HeaderMenuComponentProps) => {
                         entering={FadeInRight.delay(200)}
                     >
                         <TouchableOpacity
-                            onPress={handleSetting}
+                            onPress={handlePresentModalPress}
                             className="p-2
                 {/*bg-red-500*/}
                 "

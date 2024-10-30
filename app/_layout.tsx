@@ -7,6 +7,9 @@ import 'react-native-reanimated';
 import "../global.css";
 import Loader from "@components/loader/Loader";
 
+// bottom sheet
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary,
@@ -49,9 +52,8 @@ export default function RootLayout() {
 
     // Отображаем Loader, пока шрифты не загружены или пока showLoader активен
     if (!appReady || showLoader) {
-        return <Loader />;
+        return <Loader/>;
     }
-
 
 
     return <RootLayoutNav/>;
@@ -62,8 +64,10 @@ function RootLayoutNav() {
 
 
     return (
-        <Stack>
-            <Stack.Screen name="index" options={{headerShown: false}}/>
-        </Stack>
+        <GestureHandlerRootView style={{flex: 1}}>
+            <Stack>
+                <Stack.Screen name="index" options={{headerShown: false}}/>
+            </Stack>
+        </GestureHandlerRootView>
     );
 }
