@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {Entypo} from "@expo/vector-icons";
+import {Entypo, Feather} from "@expo/vector-icons";
 import Animated, {FadeInLeft, FadeInRight} from 'react-native-reanimated'
 
 
@@ -12,6 +12,13 @@ interface HeaderMenuComponentProps {
 const HeaderMenu = ({isRefreshingDone}: HeaderMenuComponentProps) => {
     // setIsImageLoaded
     // console.log('isImageLoaded',isImageLoaded)
+
+
+    const handleSetting=()=>{
+
+    }
+
+
     return (
 
         <View className="flex-row items-center justify-between mb-10
@@ -31,12 +38,14 @@ const HeaderMenu = ({isRefreshingDone}: HeaderMenuComponentProps) => {
                         entering={FadeInRight.delay(200)}
                     >
                         <TouchableOpacity
+                            onPress={handleSetting}
                             className="p-2
                 {/*bg-red-500*/}
                 "
                         >
 
-                            <Entypo name="menu" size={40} color="white"/>
+                            {/*<Entypo name="menu" size={40} color="white"/>*/}
+                            <Feather name="settings" size={40} color="white" />
                         </TouchableOpacity>
                     </Animated.View>
                 </>)
