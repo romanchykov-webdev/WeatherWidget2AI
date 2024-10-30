@@ -4,6 +4,9 @@ import LanguageSelector from "@components/botomSheet/LanguageSelector";
 import imagesBg from "@constants/imagesBg";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated"
 import {AntDesign} from "@expo/vector-icons";
+import {useTranslation} from "react-i18next";
+
+
 
 interface BottomSheetProps {
     tempType:boolean;
@@ -55,7 +58,8 @@ const BottomSheetItem = ({handleCloseModalPress,changeTemp,tempType}:BottomSheet
     //     color: isEnabledSpeed ? '#FFD700' : 'white',
     // }));
 
-
+    // translate
+    const { t, i18n } = useTranslation(); // получаем функции перевода
 
     return (
         <SafeAreaView className="p-5 pt-12 flex-1 flex-col justify-between
@@ -85,6 +89,8 @@ const BottomSheetItem = ({handleCloseModalPress,changeTemp,tempType}:BottomSheet
                         <AntDesign name="home" size={40} color="white" />
                     </TouchableOpacity>
                 </View>
+
+                <Text className="text-white">{t('welcome')}</Text>
 
                 {/*LanguageSelector*/}
                 <View className="flex-row items-center mb-5 justify-between">

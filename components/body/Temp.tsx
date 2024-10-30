@@ -1,17 +1,19 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import { shadowStyle, wp} from "@constants/common";
+import {shadowStyle, wp} from "@constants/common";
 import {BlurView} from "expo-blur";
 import {AntDesign} from "@expo/vector-icons";
 import Animated, {FadeInDown, FadeInUp} from 'react-native-reanimated'
+import ChangeTemp from "@components/changeTemp";
 
 // Объявите тип для пропсов
 interface TempComponentProps {
     tempType: boolean; // или используйте типизацию, которая соответствует вашим данным
-    isRefreshingDone:boolean;
+    isRefreshingDone: boolean;
+    changeTemp:()=>void
 }
 
-const TempComponent = ({tempType,isRefreshingDone}:TempComponentProps) => {
+const TempComponent = ({tempType, isRefreshingDone,changeTemp}: TempComponentProps) => {
     return (
         <View className="flex-1 mb-5
     {/*bg-red-500*/}
@@ -34,7 +36,7 @@ const TempComponent = ({tempType,isRefreshingDone}:TempComponentProps) => {
                                 }}
                             >20</Text>
                             <Text className="text-2xl self-center mb-16 text-white"
-                            >{tempType ?'°C' :'℉'}</Text>
+                            >{tempType ? '°C' : '℉'}</Text>
 
                         </Animated.View>
 
@@ -42,7 +44,7 @@ const TempComponent = ({tempType,isRefreshingDone}:TempComponentProps) => {
                         <Animated.View
                             entering={FadeInUp.delay(800)}
                             className="justify-center items-center relative top-[-20]"
-                              style={[shadowStyle]}
+                            style={[shadowStyle]}
 
                         >
                             <BlurView
@@ -64,19 +66,23 @@ const TempComponent = ({tempType,isRefreshingDone}:TempComponentProps) => {
 
                             </BlurView>
                         </Animated.View>
+
+                        {/*change temp c F*/}
+                        <Animated.View
+                            className="justify-center items-center "
+                        >
+                            <ChangeTemp tempType={tempType} changeTemp={changeTemp}/>
+
+
+                        </Animated.View>
                     </>
                 )
             }
 
 
-
-
-
-
         </View>
     );
 };
-
 
 
 export default TempComponent;

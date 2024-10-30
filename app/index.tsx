@@ -4,29 +4,21 @@ import {
     ImageBackground,
     SafeAreaView,
     View,
-    Text,
     StyleSheet,
     ScrollView,
     RefreshControl,
-    Button,
 } from 'react-native';
 import {witherImagesBg} from '@constants/index'
 import HeaderComponent from "@components/topSection/header";
 import {hp, platform} from "@constants/common";
 import TempComponent from "@components/body/Temp";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect,  useState} from "react";
 import OtherInfo from "@components/body/OtherInfo";
 import Forecast from "@components/footer/Forecast";
 import Loader from "@components/loader/Loader";
 
-// bottom sheet
-import {
-    BottomSheetModal,
-    BottomSheetView,
-    BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import BottomSheetItem from "@components/botomSheet/bottomSheetItem";
-
+// type for api
+import {WeatherType,ForecastType} from '../types/index'
 
 // const typeWither = 'light snow'
 // const typeWither = 'light rain'
@@ -45,12 +37,9 @@ export default function HomeScreen() {
 
     const changeTemp=()=>{
         setTempType(!tempType)
-        console.log('tempType',tempType)
+        // console.log('tempType',tempType)
     }
-    // console.log('tempType',tempType)
-    // useEffect(() => {
-    //     setTempType(tempType);
-    // }, [tempType]);
+
 
 
     // Проверяем, что все компоненты готовы, включая изображение
@@ -84,19 +73,38 @@ export default function HomeScreen() {
         }
     }, [isRefreshingDone]);
 
+    // api get weather
+    const BASE_URL = `https://api.openweathermap.org/data/2.5`
+    const api_key = process.env.EXPO_PUBLIC_API_KEY;
+    const [weather, setWeather] = useState<WeatherType>()
+    const [forecast, setForecast] = useState<ForecastType>()
 
-    // bottom sheet
-    // ref
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    useEffect(() => {
+        fetchWeather()
+    }, []);
+    // get weather
+    const latitude='45.688714';
+    const longitude='12.711327'
+    const fetchWeather = async () => {
+        // if (!location) {
+        //     return null
+        // }
 
-    // callbacks
-    const handlePresentModalPress = useCallback(() => {
-        // console.log('handlePresentModalPress',bottomSheetModalRef)
-        bottomSheetModalRef.current?.present();
-    }, []);
-    const handleCloseModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.dismiss(); // Закрытие Bottom Sheet
-    }, []);
+        //fetch data
+        // const latitude='45.688714'
+        // const latitude = location?.coords?.latitude
+        // const longitude='12.711327'
+        // const longitude = location?.coords?.longitude
+        const units = 'metric'
+        console.log(`${BASE_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}&units=${units}`)
+
+        const result = await fetch(`${BASE_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}&units=${units}`)
+        const data = await result.json()
+        console.log(JSON.stringify(data,null,2))
+            setWeather(data)
+    }
+
+
 
     return (
         <SafeAreaView className="flex-1"
@@ -114,9 +122,7 @@ export default function HomeScreen() {
             >
 
                 {/*  overlay    */}
-                {/*<BlurView intensity={5} className="flex-1  absolute w-full h-full top-0 left-0">*/}
                 <View style={{...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)'}}></View>
-                {/*</BlurView>*/}
 
                 {/*  body */}
 
@@ -130,14 +136,18 @@ export default function HomeScreen() {
                     {/*header*/}
                     <HeaderComponent
                         isRefreshingDone={isRefreshingDone}
-                        handlePresentModalPress={handlePresentModalPress}
                     />
 
                     {/*temp*/}
                     <TempComponent
                         tempType={tempType}
                         isRefreshingDone={isRefreshingDone}
+                        changeTemp={changeTemp}
                     />
+
+
+
+
 
                     {/*other*/}
                     <OtherInfo
@@ -153,22 +163,8 @@ export default function HomeScreen() {
                 </ScrollView>
             </ImageBackground>
 
-            {/*bottom sheet*/}
-            <BottomSheetModalProvider>
 
-                <BottomSheetModal
-                    ref={bottomSheetModalRef}
-                    // onChange={handleSheetChanges}
-                >
-                    <BottomSheetView  style={{flex:1}}>
-                        <BottomSheetItem
-                            tempType={tempType}
-                            handleCloseModalPress={handleCloseModalPress}
-                            changeTemp={changeTemp}
-                        />
-                    </BottomSheetView>
-                </BottomSheetModal>
-            </BottomSheetModalProvider>
+
 
             {/* Показываем Loader, пока изображение не загрузится */}
             {
