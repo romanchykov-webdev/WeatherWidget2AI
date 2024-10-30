@@ -1,6 +1,6 @@
 import {StatusBar} from 'expo-status-bar';
 import {
-    Text,
+
     ImageBackground,
     SafeAreaView,
     View,
@@ -9,10 +9,8 @@ import {
     RefreshControl
 } from 'react-native';
 import {witherImagesBg} from '@constants/index'
-// for blur
-import {BlurView} from 'expo-blur';
 import HeaderComponent from "@components/topSection/header";
-import {hp, platform, wp} from "@constants/common";
+import {hp, platform} from "@constants/common";
 import TempComponent from "@components/body/Temp";
 import {useCallback, useEffect, useState} from "react";
 import OtherInfo from "@components/body/OtherInfo";
