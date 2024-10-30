@@ -14,6 +14,25 @@ import snow6 from '@assets/images/imageBG/snow6.jpg'
 import thunderstorm from '@assets/images/imageBG/thunderstorm.jpg'
 import thunderstorm2 from '@assets/images/imageBG/thunderstorm2.jpg'
 import thunderstorm3 from '@assets/images/imageBG/thunderstorm3.jpg'
+import bgSetting from '@assets/images/imageBG/bgSetting.png'
 
 
-export  default {clearSky, drizzle, snow, snow2, snow3,clouds,mist,rain,rain3,snow6,snow4,snow5,thunderstorm,thunderstorm2,thunderstorm3,smoke}
+export  default {
+    clearSky,
+    drizzle,
+    snow,
+    snow2,
+    snow3,
+    clouds,
+    mist,
+    rain,
+    rain3,
+    snow6,
+    snow4,
+    snow5,
+    thunderstorm,
+    thunderstorm2,
+    thunderstorm3,
+    smoke,
+    bgSetting
+}

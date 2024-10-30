@@ -7,7 +7,7 @@ import Animated, {FadeInDown, FadeInUp} from 'react-native-reanimated'
 
 // Объявите тип для пропсов
 interface TempComponentProps {
-    tempType: string; // или используйте типизацию, которая соответствует вашим данным
+    tempType: boolean; // или используйте типизацию, которая соответствует вашим данным
     isRefreshingDone:boolean;
 }
 
@@ -34,7 +34,7 @@ const TempComponent = ({tempType,isRefreshingDone}:TempComponentProps) => {
                                 }}
                             >20</Text>
                             <Text className="text-2xl self-center mb-16 text-white"
-                            >{tempType}</Text>
+                            >{tempType ?'°C' :'℉'}</Text>
 
                         </Animated.View>
 
