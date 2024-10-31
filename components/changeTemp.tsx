@@ -18,13 +18,13 @@ const ChangeTemp = ({tempType,changeTemp}:ChangeTempProps) => {
     };
 
     const animatedStyleCelsius = useAnimatedStyle(() => ({
-        fontSize: withTiming(!isEnabled ? 24 : 32, { duration: 300 }),
+        // fontSize: withTiming(!isEnabled ? 24 : 32, { duration: 300 }),
         // color: isEnabled ? 'white' : '#FFD700',
         color: isEnabled ? '#FFD700' : 'white',
     }));
 
     const animatedStyleFahrenheit = useAnimatedStyle(() => ({
-        fontSize: withTiming(!isEnabled ? 32 : 24, { duration: 300 }),
+        // fontSize: withTiming(!isEnabled ? 32 : 24, { duration: 300 }),
         // color: isEnabled ? '#FFD700' : 'white',
         color: isEnabled ? 'white' : '#FFD700',
     }));

@@ -8,14 +8,15 @@ import ChangeTemp from "@components/changeTemp";
 
 interface HeaderMenuComponentProps {
     isRefreshingDone: boolean;
+    nameLocation:string
 }
 
-const HeaderMenu = ({isRefreshingDone}: HeaderMenuComponentProps) => {
+const HeaderMenu = ({isRefreshingDone,nameLocation}: HeaderMenuComponentProps) => {
 
 
     return (
 
-        <View className="flex-row items-center justify-between mb-10
+        <View className="flex-row items-center justify-between mb-11
                         {/*bg-red-500*/}
                         ">
 
@@ -26,7 +27,7 @@ const HeaderMenu = ({isRefreshingDone}: HeaderMenuComponentProps) => {
                             entering={FadeInLeft.delay(200)}
                             className="flex-row gap-5 items-center">
                             <FontAwesome name="map-marker" size={24} color="white"/>
-                            <Text className="text-2xl text-white font-bold">Torre di mosto</Text>
+                            <Text className="text-2xl text-white font-bold">{nameLocation}</Text>
                         </Animated.View>
 
 

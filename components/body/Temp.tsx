@@ -3,17 +3,21 @@ import {View, Text} from 'react-native';
 import {shadowStyle, wp} from "@constants/common";
 import {BlurView} from "expo-blur";
 import {AntDesign} from "@expo/vector-icons";
-import Animated, {FadeInDown, FadeInUp} from 'react-native-reanimated'
+import Animated, { FadeInUp} from 'react-native-reanimated'
 import ChangeTemp from "@components/changeTemp";
+import {WeatherMain} from "../../types";
 
 // Объявите тип для пропсов
 interface TempComponentProps {
     tempType: boolean; // или используйте типизацию, которая соответствует вашим данным
     isRefreshingDone: boolean;
-    changeTemp:()=>void
+    changeTemp:()=>void;
+    weatherMain: WeatherMain | null; // Измените тип здесь
 }
 
-const TempComponent = ({tempType, isRefreshingDone,changeTemp}: TempComponentProps) => {
+const TempComponent = ({tempType, isRefreshingDone,changeTemp,weatherMain}: TempComponentProps) => {
+
+    // console.log('weatherMain',weatherMain)
     return (
         <View className="flex-1 mb-5
     {/*bg-red-500*/}
@@ -34,7 +38,9 @@ const TempComponent = ({tempType, isRefreshingDone,changeTemp}: TempComponentPro
                                     textShadowOffset: {width: 2, height: 2}, // смещение тени
                                     textShadowRadius: 3, // радиус размытия тени
                                 }}
-                            >20</Text>
+                            >
+                                {weatherMain ? Math.round(weatherMain.temp) : ''}
+                            </Text>
                             <Text className="text-2xl self-center mb-16 text-white"
                             >{tempType ? '°C' : '℉'}</Text>
 
@@ -56,12 +62,12 @@ const TempComponent = ({tempType, isRefreshingDone,changeTemp}: TempComponentPro
                                 {/*min temp*/}
                                 <Text className="text-2xl text-neutral-300">
                                     <AntDesign name="arrowup" size={14} color="white"/>
-                                    17 °
+                                    {weatherMain ? Math.round(weatherMain.temp_max) : ''} °
                                 </Text>
                                 {/*max temp*/}
                                 <Text className="text-2xl ml-5 text-neutral-300">
                                     <AntDesign name="arrowdown" size={14} color="white"/>
-                                    25 °
+                                    {weatherMain ? Math.round(weatherMain.temp_min) : ''} °
                                 </Text>
 
                             </BlurView>
@@ -69,6 +75,7 @@ const TempComponent = ({tempType, isRefreshingDone,changeTemp}: TempComponentPro
 
                         {/*change temp c F*/}
                         <Animated.View
+                            entering={FadeInUp.delay(900)}
                             className="justify-center items-center "
                         >
                             <ChangeTemp tempType={tempType} changeTemp={changeTemp}/>

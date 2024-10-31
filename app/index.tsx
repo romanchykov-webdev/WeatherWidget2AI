@@ -1,6 +1,5 @@
 import {StatusBar} from 'expo-status-bar';
 import {
-
     ImageBackground,
     SafeAreaView,
     View,
@@ -12,13 +11,20 @@ import {witherImagesBg} from '@constants/index'
 import HeaderComponent from "@components/topSection/header";
 import {hp, platform} from "@constants/common";
 import TempComponent from "@components/body/Temp";
-import React, {useCallback, useEffect,  useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import OtherInfo from "@components/body/OtherInfo";
 import Forecast from "@components/footer/Forecast";
 import Loader from "@components/loader/Loader";
 
 // type for api
-import {WeatherType,ForecastType} from '../types/index'
+import { ForecastType, Coordinates, WeatherResponse} from '../types/'
+
+// get location
+
+
+import {getCoordinates} from "@constants/getLocation";
+import {fetchForecast, fetchWeather} from "@/api";
+// get location
 
 // const typeWither = 'light snow'
 // const typeWither = 'light rain'
@@ -28,43 +34,50 @@ const typeWither = 'clear sky'
 
 export default function HomeScreen() {
 
+    const [loading, setLoading] = useState(true); // Состояние загрузки
+    const [weather, setWeather] = useState<WeatherResponse | undefined>()
+    const [location, setLocation] = useState<Coordinates>();
+    const [forecast, setForecast] = useState<ForecastType>()
 
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-    // change Temperature
-    // const [tempType, setTempType] = useState('°C') //fahrenheit ℉;
+
+
+
+    const [isImageLoaded, setIsImageLoaded] = useState(true);
+
+    useEffect(() => {
+        if ( weather && forecast && !isImageLoaded ) {
+            setLoading(false);
+        }
+    }, [ weather, forecast,isImageLoaded ]);
+
     const [tempType, setTempType] = useState(true) //fahrenheit ℉;
 
-    const changeTemp=()=>{
+    const changeTemp = () => {
         setTempType(!tempType)
         // console.log('tempType',tempType)
     }
 
 
-
     // Проверяем, что все компоненты готовы, включая изображение
     const [isRefreshingDone, setIsRefreshingDone] = useState(false);
 
-    useEffect(() => {
-        if (isImageLoaded) {
-            setIsImageLoaded(true)
-        }
-    }, [isImageLoaded]);
-
-    // console.log('isImageLoaded index',isImageLoaded)
 
     // Функция для обновления данных
     const [refreshing, setRefreshing] = useState(false);
-    const onRefresh = useCallback(() => {
+
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
         setIsImageLoaded(true);
         // Имитация загрузки данных
-        setTimeout(() => {
-            // Здесь можно обновить данные, например, запросом на сервер
-            setRefreshing(false);
-            setIsImageLoaded(false);
-            setIsRefreshingDone(true); // Установите true, чтобы запустить анимацию
-        }, 2000);
+
+        // Здесь можно обновить данные, например, запросом на сервер
+        await loadWeatherData(); // Запрос погоды при обновлении
+        await loadForecastData(); // Запрос погоды при обновлении
+        setRefreshing(false);
+        setIsImageLoaded(false);
+        setIsRefreshingDone(true); // Установите true, чтобы запустить анимацию
+
     }, []);
     // Сброс состояния `isRefreshingDone`, когда анимация начинается
     useEffect(() => {
@@ -73,37 +86,69 @@ export default function HomeScreen() {
         }
     }, [isRefreshingDone]);
 
-    // api get weather
-    const BASE_URL = `https://api.openweathermap.org/data/2.5`
-    const api_key = process.env.EXPO_PUBLIC_API_KEY;
-    const [weather, setWeather] = useState<WeatherType>()
-    const [forecast, setForecast] = useState<ForecastType>()
 
+    // get location xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    // Получаем координаты при первой загрузке
     useEffect(() => {
-        fetchWeather()
+
+        const loadLocation = async () => {
+            try {
+                const coords = await getCoordinates();
+                setLocation(coords); // Устанавливаем координаты
+            } catch (error) {
+                console.error('Ошибка получения координат:', error);
+            }
+        };
+        loadLocation();
+
     }, []);
+
+
+
+    const loadWeatherData = async () => {
+        if (location) {
+            try {
+                const weatherData = await fetchWeather(location.latitude, location.longitude);
+                setWeather(weatherData as any);
+                // console.log('Weather data set in state:', weatherData?.name);
+            } catch (error) {
+                console.error('Ошибка при загрузке данных о погоде:', error);
+            }
+        }
+    };
+
+
+    // get location xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    // api get weather xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    const loadForecastData = async () => {
+        if (location) {
+            try {
+                const forecastData = await fetchForecast(location.latitude, location.longitude);
+                setForecast(forecastData);
+                // console.log('forecastData data set in state:', forecastData);
+            } catch (error) {
+                console.error('Ошибка при загрузке данных о погоде:', error);
+            }
+        }
+    };
+    useEffect(() => {
+        if (location) {
+            loadWeatherData();
+            loadForecastData();
+
+        }
+    }, [location]);
+
+
     // get weather
-    const latitude='45.688714';
-    const longitude='12.711327'
-    const fetchWeather = async () => {
-        // if (!location) {
-        //     return null
-        // }
+    // console.log('weather',JSON.stringify(weather,null,2));
 
-        //fetch data
-        // const latitude='45.688714'
-        // const latitude = location?.coords?.latitude
-        // const longitude='12.711327'
-        // const longitude = location?.coords?.longitude
-        const units = 'metric'
-        console.log(`${BASE_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}&units=${units}`)
-
-        const result = await fetch(`${BASE_URL}/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}&units=${units}`)
-        const data = await result.json()
-        console.log(JSON.stringify(data,null,2))
-            setWeather(data)
-    }
-
+    // if (loading || !weather || !forecast) {
+    //     return <Loader />; // Показываем Loader, пока не загрузится изображение и все данные
+    // }
 
 
     return (
@@ -136,27 +181,28 @@ export default function HomeScreen() {
                     {/*header*/}
                     <HeaderComponent
                         isRefreshingDone={isRefreshingDone}
+                        nameLocation={weather ? weather.name : ''}
                     />
-
                     {/*temp*/}
                     <TempComponent
                         tempType={tempType}
                         isRefreshingDone={isRefreshingDone}
                         changeTemp={changeTemp}
+                        weatherMain={weather ? weather.main : null} // Передаем null вместо строки
                     />
-
-
-
 
 
                     {/*other*/}
                     <OtherInfo
                         isRefreshingDone={isRefreshingDone}
+                        // weatherMainHumidity={weather ? weather.main : null}
+                        weatherOther={weather ?? undefined}
                     />
 
                     {/*Forecast*/}
                     <Forecast
                         isRefreshingDone={isRefreshingDone}
+                        forecast={forecast ?? {} as ForecastType }
                     />
 
 
@@ -164,12 +210,8 @@ export default function HomeScreen() {
             </ImageBackground>
 
 
-
-
             {/* Показываем Loader, пока изображение не загрузится */}
-            {
-                isImageLoaded && <Loader/>
-            }
+            {( loading || !weather || !forecast) && <Loader />}
 
         </SafeAreaView>
     );

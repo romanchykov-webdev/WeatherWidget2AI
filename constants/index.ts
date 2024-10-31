@@ -1,5 +1,6 @@
 import imagesBg from "./imagesBg";
 import iconsWeather from "./iconsWeather";
+import {WitherImagesBg, WitherImagesIcon} from "../types/index";
 
 export {imagesBg, iconsWeather};
 

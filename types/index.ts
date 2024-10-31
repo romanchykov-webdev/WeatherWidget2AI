@@ -46,6 +46,26 @@ export interface WeatherResponse {
     name: string;
     cod: number;
 }
+export interface WeatherMain {
+    temp: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
+    pressure: number;
+    humidity: number;
+    sea_level?: number; // если не всегда присутствует
+    grnd_level?: number; // если не всегда присутствует
+}
+export interface  Timezone{
+    timezone: number ;
+}
+export interface  SunriseSunset{
+    type: number;
+    id: number;
+    country: string;
+    sunrise: number;
+    sunset: number;
+}
 //weather
 export type WeatherType = {
     name: string;
@@ -117,3 +137,77 @@ export type ForecastType = {
     };
 };
 
+//location
+// Создаём тип для координат
+export type Coordinates = {
+    latitude: number;
+    longitude: number;
+};
+
+//imaGR TYPE
+// src/types/weatherImages.d.ts
+export type WeatherDescription =
+    | 'clear sky'
+    | 'few clouds'
+    | 'scattered clouds'
+    | 'broken clouds'
+    | 'overcast clouds'
+    | 'light rain'
+    | 'moderate rain'
+    | 'heavy intensity rain'
+    | 'very heavy rain'
+    | 'extreme rain'
+    | 'freezing rain'
+    | 'light intensity shower rain'
+    | 'shower rain'
+    | 'heavy intensity shower rain'
+    | 'light intensity drizzle'
+    | 'drizzle'
+    | 'heavy intensity drizzle'
+    | 'light intensity drizzle rain'
+    | 'drizzle rain'
+    | 'heavy intensity drizzle rain'
+    | 'shower rain and drizzle'
+    | 'heavy shower rain and drizzle'
+    | 'thunderstorm with light rain'
+    | 'thunderstorm with rain'
+    | 'thunderstorm with heavy rain'
+    | 'light thunderstorm'
+    | 'thunderstorm'
+    | 'heavy thunderstorm'
+    | 'ragged thunderstorm'
+    | 'light snow'
+    | 'snow'
+    | 'Snow'
+    | 'Heavy snow'
+    | 'heavy snow'
+    | 'sleet'
+    | 'Sleet'
+    | 'light shower sleet'
+    | 'Light shower sleet'
+    | 'shower sleet'
+    | 'Shower sleet'
+    | 'Light rain and snow'
+    | 'light rain and snow'
+    | 'rain and snow'
+    | 'Rain and snow'
+    | 'light shower snow'
+    | 'Light shower snow'
+    | 'shower snow'
+    | 'Shower snow'
+    | 'mist'
+    | 'smoke'
+    | 'haze'
+    | 'sand, dust whirls'
+    | 'fog'
+    | 'sand'
+    | 'dust';
+
+// Определение типов для изображений
+export type WitherImagesBg = {
+    [key in WeatherDescription]: any; // Замените `any` на правильный тип, если нужно
+};
+
+export type WitherImagesIcon = {
+    [key in WeatherDescription]: any; // Замените `any` на правильный тип, если нужно
+};

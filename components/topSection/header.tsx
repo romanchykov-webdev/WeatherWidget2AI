@@ -6,12 +6,13 @@ import HeaderSearch from "@components/topSection/headerSearch";
 
 interface HeaderComponentProps {
     isRefreshingDone: boolean;
+    nameLocation:string
 }
 
-const HeaderComponent =({isRefreshingDone,}:HeaderComponentProps) => {
+const HeaderComponent =({isRefreshingDone,nameLocation}:HeaderComponentProps) => {
     return (
-        <View className="flex-col">
-            <HeaderMenu isRefreshingDone={isRefreshingDone} />
+        <View className="flex-col mb-5">
+            <HeaderMenu isRefreshingDone={isRefreshingDone} nameLocation={nameLocation} />
             <HeaderSearch isRefreshingDone={isRefreshingDone}/>
         </View>
     );
