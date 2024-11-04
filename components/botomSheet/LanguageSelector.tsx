@@ -4,6 +4,13 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 export default function LanguageSelector() {
     const [language, setLanguage] = useState('ru'); // 'ru' для русского языка
     const [modalVisible, setModalVisible] = useState(false);
+    const selectLanguage = (code: string) => {
+        setLanguage(code);
+        setModalVisible(false);
+        console.log('leng',code)
+        // Сюда можно добавить код для обновления языка приложения
+    };
+
 
     const languages = [
         { code: 'ru', label: 'Русский' },
@@ -12,12 +19,7 @@ export default function LanguageSelector() {
         // Добавьте другие языки здесь
     ];
 
-    const selectLanguage = (code: string) => {
-        setLanguage(code);
-        setModalVisible(false);
-        console.log('leng',code)
-        // Сюда можно добавить код для обновления языка приложения
-    };
+
 
     return (
         <View style={styles.container}>

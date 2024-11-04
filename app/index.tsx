@@ -1,32 +1,30 @@
 import {StatusBar} from 'expo-status-bar';
 import {
-
     ImageBackground,
     SafeAreaView,
     View,
-    Text,
     StyleSheet,
     ScrollView,
     RefreshControl,
-    Button,
 } from 'react-native';
 import {witherImagesBg} from '@constants/index'
 import HeaderComponent from "@components/topSection/header";
 import {hp, platform} from "@constants/common";
 import TempComponent from "@components/body/Temp";
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import OtherInfo from "@components/body/OtherInfo";
 import Forecast from "@components/footer/Forecast";
 import Loader from "@components/loader/Loader";
 
-// bottom sheet
-import {
-    BottomSheetModal,
-    BottomSheetView,
-    BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import BottomSheetItem from "@components/botomSheet/bottomSheetItem";
+// type for api
+import { ForecastType, Coordinates, WeatherResponse} from '../types/'
 
+// get location
+
+
+import {getCoordinates} from "@constants/getLocation";
+import {fetchForecast, fetchWeather} from "@/api";
+// get location
 
 // const typeWither = 'light snow'
 // const typeWither = 'light rain'
@@ -36,46 +34,50 @@ const typeWither = 'clear sky'
 
 export default function HomeScreen() {
 
+    const [loading, setLoading] = useState(true); // Состояние загрузки
+    const [weather, setWeather] = useState<WeatherResponse | undefined>()
+    const [location, setLocation] = useState<Coordinates>();
+    const [forecast, setForecast] = useState<ForecastType>()
 
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-    // change Temperature
-    // const [tempType, setTempType] = useState('°C') //fahrenheit ℉;
+
+
+
+    const [isImageLoaded, setIsImageLoaded] = useState(true);
+
+    useEffect(() => {
+        if ( weather && forecast && !isImageLoaded ) {
+            setLoading(false);
+        }
+    }, [ weather, forecast,isImageLoaded ]);
+
     const [tempType, setTempType] = useState(true) //fahrenheit ℉;
 
-    const changeTemp=()=>{
+    const changeTemp = () => {
         setTempType(!tempType)
-        console.log('tempType',tempType)
+        // console.log('tempType',tempType)
     }
-    // console.log('tempType',tempType)
-    // useEffect(() => {
-    //     setTempType(tempType);
-    // }, [tempType]);
 
 
     // Проверяем, что все компоненты готовы, включая изображение
     const [isRefreshingDone, setIsRefreshingDone] = useState(false);
 
-    useEffect(() => {
-        if (isImageLoaded) {
-            setIsImageLoaded(true)
-        }
-    }, [isImageLoaded]);
-
-    // console.log('isImageLoaded index',isImageLoaded)
 
     // Функция для обновления данных
     const [refreshing, setRefreshing] = useState(false);
-    const onRefresh = useCallback(() => {
+
+    const onRefresh = useCallback(async () => {
         setRefreshing(true);
         setIsImageLoaded(true);
         // Имитация загрузки данных
-        setTimeout(() => {
-            // Здесь можно обновить данные, например, запросом на сервер
-            setRefreshing(false);
-            setIsImageLoaded(false);
-            setIsRefreshingDone(true); // Установите true, чтобы запустить анимацию
-        }, 2000);
+
+        // Здесь можно обновить данные, например, запросом на сервер
+        await loadWeatherData(); // Запрос погоды при обновлении
+        await loadForecastData(); // Запрос погоды при обновлении
+        setRefreshing(false);
+        setIsImageLoaded(false);
+        setIsRefreshingDone(true); // Установите true, чтобы запустить анимацию
+
     }, []);
     // Сброс состояния `isRefreshingDone`, когда анимация начинается
     useEffect(() => {
@@ -85,18 +87,69 @@ export default function HomeScreen() {
     }, [isRefreshingDone]);
 
 
-    // bottom sheet
-    // ref
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    // get location xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-    // callbacks
-    const handlePresentModalPress = useCallback(() => {
-        // console.log('handlePresentModalPress',bottomSheetModalRef)
-        bottomSheetModalRef.current?.present();
+    // Получаем координаты при первой загрузке
+    useEffect(() => {
+
+        const loadLocation = async () => {
+            try {
+                const coords = await getCoordinates();
+                setLocation(coords); // Устанавливаем координаты
+            } catch (error) {
+                console.error('Ошибка получения координат:', error);
+            }
+        };
+        loadLocation();
+
     }, []);
-    const handleCloseModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.dismiss(); // Закрытие Bottom Sheet
-    }, []);
+
+
+
+    const loadWeatherData = async () => {
+        if (location) {
+            try {
+                const weatherData = await fetchWeather(location.latitude, location.longitude);
+                setWeather(weatherData as any);
+                // console.log('Weather data set in state:', weatherData?.name);
+            } catch (error) {
+                console.error('Ошибка при загрузке данных о погоде:', error);
+            }
+        }
+    };
+
+
+    // get location xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    // api get weather xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    const loadForecastData = async () => {
+        if (location) {
+            try {
+                const forecastData = await fetchForecast(location.latitude, location.longitude);
+                setForecast(forecastData);
+                // console.log('forecastData data set in state:', forecastData);
+            } catch (error) {
+                console.error('Ошибка при загрузке данных о погоде:', error);
+            }
+        }
+    };
+    useEffect(() => {
+        if (location) {
+            loadWeatherData();
+            loadForecastData();
+
+        }
+    }, [location]);
+
+
+    // get weather
+    // console.log('weather',JSON.stringify(weather,null,2));
+
+    // if (loading || !weather || !forecast) {
+    //     return <Loader />; // Показываем Loader, пока не загрузится изображение и все данные
+    // }
+
 
     return (
         <SafeAreaView className="flex-1"
@@ -114,9 +167,7 @@ export default function HomeScreen() {
             >
 
                 {/*  overlay    */}
-                {/*<BlurView intensity={5} className="flex-1  absolute w-full h-full top-0 left-0">*/}
                 <View style={{...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)'}}></View>
-                {/*</BlurView>*/}
 
                 {/*  body */}
 
@@ -130,50 +181,37 @@ export default function HomeScreen() {
                     {/*header*/}
                     <HeaderComponent
                         isRefreshingDone={isRefreshingDone}
-                        handlePresentModalPress={handlePresentModalPress}
+                        nameLocation={weather ? weather.name : ''}
                     />
-
                     {/*temp*/}
                     <TempComponent
                         tempType={tempType}
                         isRefreshingDone={isRefreshingDone}
+                        changeTemp={changeTemp}
+                        weatherMain={weather ? weather.main : null} // Передаем null вместо строки
                     />
+
 
                     {/*other*/}
                     <OtherInfo
                         isRefreshingDone={isRefreshingDone}
+                        // weatherMainHumidity={weather ? weather.main : null}
+                        weatherOther={weather ?? undefined}
                     />
 
                     {/*Forecast*/}
                     <Forecast
                         isRefreshingDone={isRefreshingDone}
+                        forecast={forecast ?? {} as ForecastType }
                     />
 
 
                 </ScrollView>
             </ImageBackground>
 
-            {/*bottom sheet*/}
-            <BottomSheetModalProvider>
-
-                <BottomSheetModal
-                    ref={bottomSheetModalRef}
-                    // onChange={handleSheetChanges}
-                >
-                    <BottomSheetView  style={{flex:1}}>
-                        <BottomSheetItem
-                            tempType={tempType}
-                            handleCloseModalPress={handleCloseModalPress}
-                            changeTemp={changeTemp}
-                        />
-                    </BottomSheetView>
-                </BottomSheetModal>
-            </BottomSheetModalProvider>
 
             {/* Показываем Loader, пока изображение не загрузится */}
-            {
-                isImageLoaded && <Loader/>
-            }
+            {( loading || !weather || !forecast) && <Loader />}
 
         </SafeAreaView>
     );

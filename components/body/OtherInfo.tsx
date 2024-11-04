@@ -3,29 +3,38 @@ import {View, Text, Image} from 'react-native';
 import {BlurView} from "expo-blur";
 import {witherImagesIcon} from "@constants/index";
 import iconsWeather from "@constants/iconsWeather";
-import dayjs from "dayjs";
 import {formatTime, shadowStyle} from "@constants/common";
 
 import Animated, {FadeIn, FadeInDown, FadeInUp} from 'react-native-reanimated'
+import {WeatherResponse} from "../../types/";
 
 interface OtherInfoComponentProps {
     isRefreshingDone: boolean;
+    // weatherMainHumidity: WeatherMain | null; // Измените тип здесь
+    // timeZone:Timezone;
+    weatherOther?: WeatherResponse;
 }
 
 
-const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
+const OtherInfo = ({isRefreshingDone, weatherOther}: OtherInfoComponentProps) => {
 
-    const sunrise = 1726636384;
-    const sunset = 1726680975;
-    const timezone = 7200
-    const description = "moderate rain"
-    const humidity = 60
 
+
+    // console.log(weatherOther)
+
+    // Безопасная проверка на наличие weatherOther и его полей
+    const description = weatherOther?.weather?.[0]?.description || '';
+    const humidity = weatherOther?.main?.humidity ?? '';
+    const sunrise = weatherOther?.sys?.sunrise ?? 0;
+    const sunset = weatherOther?.sys?.sunset ?? 0;
+    const timezone = weatherOther?.timezone ?? 0;
+    //
+    // console.log('description', description)
 
     return (
         <>
             {
-                !isRefreshingDone &&(
+                !isRefreshingDone && (
                     <Animated.View
                         entering={FadeIn.delay(800).springify()}
                         className="flex-1 mb-5"
@@ -43,7 +52,8 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
                                             <Animated.Image
                                                 entering={FadeInUp.delay(1000).springify()}
                                                 className="w-[50px] h-[50px] mb-3"
-                                                source={witherImagesIcon[description]}
+                                                // source={witherImagesIcon[description]}
+                                                source={witherImagesIcon[description as keyof typeof witherImagesIcon]}
                                                 resizeMode="cover"
                                             />
                                             <Animated.Text
@@ -76,7 +86,7 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
                                             numberOfLines={1}
                                             ellipsizeMode="tail"
                                         >
-                                            {humidity}%
+                                            {humidity} %
                                         </Animated.Text>
                                     </>
                                 )
@@ -85,8 +95,8 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
 
                             {/* Восход и закат */}
                             <View className="flex-1 justify-around items-center h-full
-            {/*bg-red-500*/}
-            ">
+                                            {/*bg-red-500*/}
+                                            ">
                                 {
                                     !isRefreshingDone && (
                                         <>
@@ -97,7 +107,7 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
 
                                                 <Image
                                                     className="w-[20px] h-[20px] mr-5"
-                                                    source={iconsWeather.sunrise} // Иконка для восхода/заката
+                                                    source={iconsWeather.sunrise}
                                                     resizeMode="cover"
                                                 />
                                                 <Text
@@ -105,7 +115,7 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
                                                     numberOfLines={1}
                                                     ellipsizeMode="tail"
                                                 >
-                                                    {formatTime(sunrise, timezone)}
+                                                    {formatTime(sunrise, timezone).slice(0,5)}
                                                 </Text>
                                             </Animated.View>
 
@@ -115,7 +125,7 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
                                                 className="justify-center items-center flex-row">
                                                 <Image
                                                     className="w-[20px] h-[20px] mr-5"
-                                                    source={iconsWeather.sunset} // Иконка для восхода/заката
+                                                    source={iconsWeather.sunset}
                                                     resizeMode="cover"
                                                 />
                                                 <Text
@@ -123,7 +133,7 @@ const OtherInfo = ({isRefreshingDone}: OtherInfoComponentProps) => {
                                                     numberOfLines={1}
                                                     ellipsizeMode="tail"
                                                 >
-                                                    {formatTime(sunset, timezone)}
+                                                    {formatTime(sunset, timezone).slice(0,5)}
                                                 </Text>
                                             </Animated.View>
                                         </>
