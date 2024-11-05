@@ -11,11 +11,11 @@ import {WeatherMain} from "../../types";
 interface TempComponentProps {
     tempType: boolean; // или используйте типизацию, которая соответствует вашим данным
     isRefreshingDone: boolean;
-    changeTemp:()=>void;
+    // changeTemp:()=>void;
     weatherMain: WeatherMain | null; // Измените тип здесь
 }
 
-const TempComponent = ({tempType, isRefreshingDone,changeTemp,weatherMain}: TempComponentProps) => {
+const TempComponent = ({tempType, isRefreshingDone,weatherMain}: TempComponentProps) => {
 
     // console.log('weatherMain',weatherMain)
     return (
@@ -28,7 +28,10 @@ const TempComponent = ({tempType, isRefreshingDone,changeTemp,weatherMain}: Temp
                         {/*?general temp*/}
                         <Animated.View
                             entering={FadeInUp.delay(600)}
-                            className="flex-row relative justify-center">
+                            className="flex-row relative justify-center
+                            {/*border-2*/}
+                            {/*border-red-500*/}
+                            ">
                             <Text
                                 className="text-white items-center justify-center text-center font-bold "
                                 style={{
@@ -41,7 +44,9 @@ const TempComponent = ({tempType, isRefreshingDone,changeTemp,weatherMain}: Temp
                             >
                                 {weatherMain ? Math.round(weatherMain.temp) : ''}
                             </Text>
-                            <Text className="text-2xl self-center mb-16 text-white"
+                            <Text className="text-2xl self-center mb-16 text-white absolute right-[20] top-[20]
+                            {/*bg-red-500*/}
+                            "
                             >{tempType ? '°C' : '℉'}</Text>
 
                         </Animated.View>
@@ -78,7 +83,7 @@ const TempComponent = ({tempType, isRefreshingDone,changeTemp,weatherMain}: Temp
                             entering={FadeInUp.delay(900)}
                             className="justify-center items-center "
                         >
-                            <ChangeTemp tempType={tempType} changeTemp={changeTemp}/>
+                            {/*<ChangeTemp tempType={tempType} changeTemp={changeTemp}/>*/}
 
 
                         </Animated.View>

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {Entypo, Feather} from "@expo/vector-icons";
+import {Entypo, Feather, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import Animated, {FadeInLeft, FadeInRight} from 'react-native-reanimated'
 import ChangeTemp from "@components/changeTemp";
 
@@ -9,10 +9,16 @@ import ChangeTemp from "@components/changeTemp";
 interface HeaderMenuComponentProps {
     isRefreshingDone: boolean;
     nameLocation:string
+    loadLocation: () => void;
+    isPoint:boolean;
 }
 
-const HeaderMenu = ({isRefreshingDone,nameLocation}: HeaderMenuComponentProps) => {
+const HeaderMenu = ({isRefreshingDone,nameLocation,loadLocation,isPoint}: HeaderMenuComponentProps) => {
 
+const getLocation=()=>{
+    loadLocation()
+}
+    // console.log('isPoint',isPoint)
 
     return (
 
@@ -30,6 +36,19 @@ const HeaderMenu = ({isRefreshingDone,nameLocation}: HeaderMenuComponentProps) =
                             <Text className="text-2xl text-white font-bold">{nameLocation}</Text>
                         </Animated.View>
 
+
+                        {
+                            isPoint &&<Animated.View
+                                entering={FadeInRight.delay(200)}
+                                className="flex-row gap-5 items-center"
+
+                            >
+                                <TouchableOpacity onPress={getLocation}>
+
+                                    <MaterialIcons name="person-pin-circle" size={34} color="white" />
+                                </TouchableOpacity>
+                            </Animated.View>
+                        }
 
                     </>
 

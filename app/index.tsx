@@ -29,15 +29,22 @@ import {fetchForecast, fetchWeather} from "@/api";
 // const typeWither = 'light snow'
 // const typeWither = 'light rain'
 // const typeWither = 'moderate rain'
-const typeWither = 'clear sky'
+// const typeWither = 'clear sky'
 
 
 export default function HomeScreen() {
 
-    const [loading, setLoading] = useState(true); // Состояние загрузки
+    const [loading, setLoading] = useState(false); // Состояние загрузки
     const [weather, setWeather] = useState<WeatherResponse | undefined>()
     const [location, setLocation] = useState<Coordinates>();
     const [forecast, setForecast] = useState<ForecastType>()
+
+    const [myPosition, setMyPosition] = useState<Coordinates>()
+    const [isPoint, setIsPoint] = useState<boolean>(false)
+
+    // console.log('weather',weather.weather[0].description)
+    // console.log('location',location)
+    // console.log('myPosition',myPosition)
 
 
 
@@ -53,10 +60,10 @@ export default function HomeScreen() {
 
     const [tempType, setTempType] = useState(true) //fahrenheit ℉;
 
-    const changeTemp = () => {
-        setTempType(!tempType)
-        // console.log('tempType',tempType)
-    }
+    // const changeTemp = () => {
+    //     setTempType(!tempType)
+    //     // console.log('tempType',tempType)
+    // }
 
 
     // Проверяем, что все компоненты готовы, включая изображение
@@ -90,16 +97,22 @@ export default function HomeScreen() {
     // get location xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     // Получаем координаты при первой загрузке
+    const loadLocation = async () => {
+        try {
+            setLoading(true); // Устанавливаем лоадер в true
+            const coords = await getCoordinates();
+            setLocation(coords); // Устанавливаем координаты
+            setMyPosition(coords)
+
+        } catch (error) {
+            console.error('Ошибка получения координат:', error);
+        }finally {
+            setLoading(false); // Устанавливаем лоадер в false после завершения
+        }
+    };
     useEffect(() => {
 
-        const loadLocation = async () => {
-            try {
-                const coords = await getCoordinates();
-                setLocation(coords); // Устанавливаем координаты
-            } catch (error) {
-                console.error('Ошибка получения координат:', error);
-            }
-        };
+
         loadLocation();
 
     }, []);
@@ -126,11 +139,14 @@ export default function HomeScreen() {
     const loadForecastData = async () => {
         if (location) {
             try {
+                setLoading(true);
                 const forecastData = await fetchForecast(location.latitude, location.longitude);
                 setForecast(forecastData);
                 // console.log('forecastData data set in state:', forecastData);
             } catch (error) {
                 console.error('Ошибка при загрузке данных о погоде:', error);
+            }finally {
+                setLoading(false);
             }
         }
     };
@@ -142,13 +158,29 @@ export default function HomeScreen() {
         }
     }, [location]);
 
-
+    const description = weather?.weather?.[0]?.description || '';
     // get weather
-    // console.log('weather',JSON.stringify(weather,null,2));
 
-    // if (loading || !weather || !forecast) {
-    //     return <Loader />; // Показываем Loader, пока не загрузится изображение и все данные
-    // }
+    // console.log('location',location)
+
+// Запуск только при изменении location или myPosition
+    useEffect(() => {
+        if (location && myPosition) {
+            // Сравниваем координаты только при их изменении
+            const isEqual =
+                location.latitude === myPosition.latitude &&
+                location.longitude === myPosition.longitude;
+
+            if (isEqual) {
+                // console.log('Координаты одинаковые: ок');
+                setIsPoint(false);
+            } else {
+                // console.log('Координаты разные');
+                setIsPoint(true);
+            }
+        }
+    }, [location, myPosition]);
+
 
 
     return (
@@ -157,7 +189,9 @@ export default function HomeScreen() {
         >
             <StatusBar style="dark" backgroundColor={'transparent'}/>
             <ImageBackground
-                source={witherImagesBg[typeWither]}
+                // source={witherImagesBg[typeWither]}
+                // source={witherImagesBg[weather.weather[0].description]}
+                source={witherImagesBg[description as keyof typeof witherImagesBg]}
                 resizeMode="cover"
                 className="flex-1 items-center justify-center
                 {/*bg-red-500*/}
@@ -171,7 +205,9 @@ export default function HomeScreen() {
 
                 {/*  body */}
 
-                <ScrollView className="mt-[50] w-full p-5
+                <ScrollView
+                    keyboardDismissMode="on-drag"
+                    className="mt-[50] w-full p-5
                 {/*bg-red-500*/}
                 "
                             showsVerticalScrollIndicator={false}
@@ -182,12 +218,16 @@ export default function HomeScreen() {
                     <HeaderComponent
                         isRefreshingDone={isRefreshingDone}
                         nameLocation={weather ? weather.name : ''}
+                        setLocation={setLocation}
+                        loadLocation={loadLocation}
+                        isPoint={isPoint}
+
                     />
                     {/*temp*/}
                     <TempComponent
                         tempType={tempType}
                         isRefreshingDone={isRefreshingDone}
-                        changeTemp={changeTemp}
+                        // changeTemp={changeTemp}
                         weatherMain={weather ? weather.main : null} // Передаем null вместо строки
                     />
 
