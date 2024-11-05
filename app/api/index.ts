@@ -45,3 +45,16 @@ export const fetchForecast = async (latitude: number, longitude: number) => {
         throw error;
     }
 };
+
+
+export const fetchCities = async (query:any) => {
+    const units = 'metric';
+    if (query.length > 2) {
+        const response = await fetch(
+            `${BASE_URL}/find?q=${query}&type=like&appid=${API_KEY}&units=${units}`
+        );
+        const data = await response.json();
+        // console.log('data', JSON.stringify(data));
+        return data.list
+    }
+};

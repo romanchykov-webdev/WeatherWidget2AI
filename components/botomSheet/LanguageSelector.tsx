@@ -7,7 +7,7 @@ export default function LanguageSelector() {
     const selectLanguage = (code: string) => {
         setLanguage(code);
         setModalVisible(false);
-        console.log('leng',code)
+        // console.log('leng',code)
         // Сюда можно добавить код для обновления языка приложения
     };
 
